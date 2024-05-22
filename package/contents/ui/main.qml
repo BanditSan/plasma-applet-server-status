@@ -2,14 +2,15 @@
  *   Copyright (C) 2017 by MakG <makg@makg.eu>                             *
  ***************************************************************************/
 
-import QtQuick 2.1
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.4
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
+import org.kde.plasma.components as PlasmaComponents
+import org.kde.kirigami as Kirigami
 
-Item {
+PlasmoidItem {
 	id: root
 	
 	property int lastRefreshAt: 0
@@ -21,7 +22,7 @@ Item {
 	height: 300
 	
 // 	Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
-	Plasmoid.toolTipTextFormat: Text.RichText
+	toolTipTextFormat: Text.RichText
 	
 	ServersModel {
 		id: serversModel
@@ -30,21 +31,21 @@ Item {
 	Component.onCompleted: {
 		reloadServerModel();
 		
-		plasmoid.setAction("refreshAll", i18n("Refresh all"), "view-refresh")
+		Plasmoid.setAction("refreshAll", i18n("Refresh all"), "view-refresh")
 	}
 	
 	Connections {
-		target: plasmoid.configuration
+		target: Plasmoid.configuration
 		
 		onServersChanged: {
 			reloadServerModel();
 		}
 	}
 	
-	Plasmoid.compactRepresentation: Item {
-		PlasmaCore.IconItem {
+	compactRepresentation: Item {
+		Kirigami.Icon {
 			anchors.fill: parent
-			source: statusSummary == 1 ? plasmoid.configuration.iconOnline : plasmoid.configuration.iconOffline
+			source: statusSummary == 1 ? Plasmoid.configuration.iconOnline : Plasmoid.configuration.iconOffline
 		}
 		
 		
@@ -53,12 +54,12 @@ Item {
 			anchors.fill: parent
 			
 			onClicked: {
-				plasmoid.expanded = !plasmoid.expanded
+				Plasmoid.expanded = !Plasmoid.expanded
 			}
 		}
 	}
 	
-	Plasmoid.fullRepresentation: Item {
+	fullRepresentation: Item {
 		Layout.preferredWidth: 300
 		Layout.preferredHeight: 300
 		
@@ -69,12 +70,12 @@ Item {
 			delegate: Row {
 				height: nameText.paintedHeight * 1.5
 				
-				PlasmaCore.IconItem {
+				Kirigami.Icon {
 					id: icon
 					
 					width: parent.height
 					height: parent.height
-					source: model.status == 1 ? plasmoid.configuration.iconOnline : plasmoid.configuration.iconOffline
+					source: model.status == 1 ? Plasmoid.configuration.iconOnline : Plasmoid.configuration.iconOffline
 					opacity: model.refreshing ? 0.2 : 1.0
 				}
 				
@@ -105,7 +106,7 @@ Item {
 					height: parent.height
 					text: model.name.length == 0 ? model.hostname : model.name
 					verticalAlignment: Text.AlignVCenter
-					font.pointSize: plasmoid.configuration.fontSize
+					font.pointSize: Plasmoid.configuration.fontSize
 				}
 				
 				MouseArea {
@@ -127,7 +128,7 @@ Item {
 			anchors.centerIn: parent
 			text: i18n("Configure...")
 			visible: serversModel.count == 0
-			onClicked: plasmoid.action("configure").trigger();
+			onClicked: Plasmoid.action("configure").trigger();
 		}
 	}
 	
@@ -188,7 +189,7 @@ Item {
 	function reloadServerModel() {
 // 		serversModel.clear();
 // 		
-// 		var servers = JSON.parse(plasmoid.configuration.servers);
+// 		var servers = JSON.parse(Plasmoid.configuration.servers);
 // 		
 // 		for(var i = 0; i < servers.length; i++) {
 // 			if(servers[i].active) {
@@ -277,7 +278,7 @@ Item {
 	}
 	
 	function notify(serverIndex, status) {
-		var notification = status === 0 ? plasmoid.configuration.notificationDown : plasmoid.configuration.notificationUp;
+		var notification = status === 0 ? Plasmoid.configuration.notificationDown : Plasmoid.configuration.notificationUp;
 		notification = JSON.parse(notification);
 		
 		switch(notification.action) {
